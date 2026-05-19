@@ -2,10 +2,7 @@ import structlog
 
 logger = structlog.get_logger(__name__)
 from model_hub.models.choices import ModelChoices
-try:
-    from ee.usage.models.usage import APICallTypeChoices
-except ImportError:
-    APICallTypeChoices = None
+from tfc.constants.api_calls import APICallTypeChoices
 
 if APICallTypeChoices is not None:
     model_to_api_call_type = {

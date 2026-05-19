@@ -51,11 +51,7 @@ from tfc.temporal import temporal_activity
 from tfc.utils.storage import (
     delete_compare_folder,
 )
-try:
-    from ee.usage.models.usage import APICallStatusChoices, APICallTypeChoices
-except ImportError:
-    APICallStatusChoices = None
-    APICallTypeChoices = None
+from tfc.constants.api_calls import APICallStatusChoices, APICallTypeChoices
 try:
     from ee.usage.utils.usage_entries import count_text_tokens, log_and_deduct_cost_for_api_request
 except ImportError:
@@ -364,10 +360,7 @@ def create_synthetic_dataset(
         if not request_uuid:
             request_uuid = task_manager.start_task(str(dataset_id))
 
-        try:
-            from ee.usage.models.usage import APICallTypeChoices
-        except ImportError:
-            APICallTypeChoices = None
+        from tfc.constants.api_calls import APICallTypeChoices
         try:
             from ee.usage.schemas.event_types import BillingEventType
         except ImportError:
