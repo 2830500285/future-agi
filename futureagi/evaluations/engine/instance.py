@@ -38,6 +38,7 @@ _RUNTIME_ALLOWED_KEYS = {
         "output_type",
         "choices",
         "choice_scores",
+        "multi_choice",
         "reverse_output",
     },
     "CustomPromptEvaluator": {
@@ -260,6 +261,7 @@ def prepare_eval_config(
             else []
         )
         config["choice_scores"] = eval_template.choice_scores
+        config["multi_choice"] = bool(eval_template.multi_choice)
         config["pass_threshold"] = (
             eval_template.pass_threshold
             if eval_template.pass_threshold is not None
@@ -326,13 +328,21 @@ def prepare_eval_config(
             config["api_key"] = _get_api_key(raw_model, org_id, ws_id)
 
         config["check_internet"] = eval_template.config.get("check_internet", False)
-        config["multi_choice"] = eval_template.config.get("multi_choice")
+        config["multi_choice"] = bool(eval_template.multi_choice)
         config["choices"] = eval_template.choices or (
             list(eval_template.choice_scores.keys())
             if eval_template.choice_scores
             else []
         )
         config["choice_scores"] = eval_template.choice_scores
+        config["pass_threshold"] = (
+            eval_template.pass_threshold
+            if eval_template.pass_threshold is not None
+            else 0.5
+        )
+        config["reverse_output"] = bool(
+            eval_template.config.get("reverse_output", False)
+        )
 
     # FutureAGI evals (DeterministicEvaluator, RankingEvaluator)
     if is_futureagi:

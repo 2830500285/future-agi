@@ -1837,7 +1837,10 @@ class EvaluationRunner:
                     or next(iter(choice_result.values()), choice_result)
                 )
             # Map choice string to numeric score via choice_scores
-            from model_hub.utils.scoring import apply_choice_scores
+            from model_hub.utils.scoring import (
+                aggregate_choice_scores,
+                apply_choice_scores,
+            )
 
             if (
                 self.eval_template
@@ -1857,8 +1860,12 @@ class EvaluationRunner:
                 and isinstance(choice_result, list)
                 and choice_result
             ):
-                first = str(choice_result[0])
-                mapped = apply_choice_scores(first, self.eval_template.choice_scores)
+                # Multi-choice + scores: average the scores of every selected
+                # label. (Was first-label-only — see shared logic in
+                # ee/evals/llm/result_logic.derive_failure.)
+                mapped = aggregate_choice_scores(
+                    choice_result, self.eval_template.choice_scores
+                )
                 value = {
                     "score": mapped if mapped is not None else 0.0,
                     "choices": choice_result,

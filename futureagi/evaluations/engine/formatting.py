@@ -89,7 +89,10 @@ def format_eval_value(result_data, eval_template):
             )
 
         # Map choice string to numeric score via choice_scores
-        from model_hub.utils.scoring import apply_choice_scores
+        from model_hub.utils.scoring import (
+            aggregate_choice_scores,
+            apply_choice_scores,
+        )
 
         if (
             eval_template
@@ -107,8 +110,10 @@ def format_eval_value(result_data, eval_template):
             and isinstance(choice_result, list)
             and choice_result
         ):
-            first = str(choice_result[0])
-            mapped = apply_choice_scores(first, eval_template.choice_scores)
+            # Multi-choice + scores: average across selected labels.
+            mapped = aggregate_choice_scores(
+                choice_result, eval_template.choice_scores
+            )
             value = {
                 "score": mapped if mapped is not None else 0.0,
                 "choices": choice_result,

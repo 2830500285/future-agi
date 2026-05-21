@@ -105,6 +105,27 @@ def apply_choice_scores(
     return None
 
 
+def aggregate_choice_scores(
+    labels, choice_scores: dict[str, float]
+) -> float | None:
+    """
+    Average the scores of a list of selected labels (multi-choice).
+
+    Used by format_output when a multi-choice eval has choice_scores
+    declared. Returns None if no labels resolve to a score.
+    """
+    if not labels or not choice_scores:
+        return None
+    resolved = []
+    for label in labels:
+        score = apply_choice_scores(str(label), choice_scores)
+        if score is not None:
+            resolved.append(float(score))
+    if not resolved:
+        return None
+    return sum(resolved) / len(resolved)
+
+
 def validate_choice_scores(choice_scores: dict) -> list[str]:
     """
     Validate a choice_scores dict.
